@@ -46,7 +46,7 @@ while True:
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=1):
             print averagedRPM
-            dataWriter.writerow([averagedRPM,averagedRPM,round(now-firstTime.total_seconds(),1)])
+            dataWriter.writerow([averagedRPM,averagedRPM,round((now-firstTime).total_seconds(),1)])
             lastUpdate = now
             
     except (KeyboardInterrupt,SystemExit):
