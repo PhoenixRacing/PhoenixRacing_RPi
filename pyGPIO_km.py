@@ -20,8 +20,8 @@ alpha = .33 #filter constant
 dataFile = open('eggs.csv','a')
 dataWriter = csv.writer(dataFile)
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
-dataWriter.writeRow([initMsg])
-dataWriter.writeRow(['Spedometer','Tachometer','Time since start'])
+dataWriter.writerow([initMsg])
+dataWriter.writerow(['Spedometer','Tachometer','Time since start'])
 
 #main loop
 while True:
@@ -46,7 +46,7 @@ while True:
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=1):
             print averagedRPM
-            dataWriter.writeRow([averagedRPM,averagedRPM,round(now-firstTime.total_seconds(),1)])
+            dataWriter.writerow([averagedRPM,averagedRPM,round(now-firstTime.total_seconds(),1)])
             lastUpdate = now
             
     except (KeyboardInterrupt,SystemExit):
