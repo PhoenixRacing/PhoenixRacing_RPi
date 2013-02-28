@@ -33,18 +33,18 @@ while True:
 
             #a leading edge of the magnet
             if GPIO.input(SPEDO_PIN) is False:
-                dt = max(1, (now - last).microseconds)/1000000
-                rpm = 60 / numberOfMagnets / dt
+                dt = max(1, (now - last).microseconds)/1000000.0
+                rpm = 60.0 / numberOfMagnets / dt
                 averagedRPM = averagedRPM*(1-alpha) + rpm*alpha
                 last = now
     
         #catch the case when the input stops
-        if now - last > datetime.timedelta(seconds=0.5):
-            averagedRPM = (averagedRPM * 2) / 3
-            last = datetime.datetime.now()
+        elif now - last > datetime.timedelta(seconds=0.25):
+            averagedRPM = min(1e-4,(averagedRPM * 2) / 3)
+            last = now
         
         #print and log data
-        if now - lastUpdate > datetime.timedelta(seconds=1):
+        if now - lastUpdate > datetime.timedelta(seconds=0.5):
             print averagedRPM
             dataWriter.writerow([averagedRPM,averagedRPM,round((now-firstTime).total_seconds(),1)])
             lastUpdate = now
