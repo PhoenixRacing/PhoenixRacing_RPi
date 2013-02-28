@@ -4,7 +4,7 @@ import datetime
 import csv
 
 #setup the board layout
-SPEDO_PIN = 13
+SPEDO_PIN = 11
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(SPEDO_PIN, GPIO.IN)
@@ -40,7 +40,8 @@ while True:
     
         #catch the case when the input stops
         elif now - last > datetime.timedelta(seconds=0.25):
-            averagedRPM = min(1e-4,(averagedRPM * 2) / 3)
+            print 'too slow'
+            averagedRPM = max(1e-4,(averagedRPM * 2) / 3)
             last = now
         
         #print and log data
