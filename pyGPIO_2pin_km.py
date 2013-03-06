@@ -4,8 +4,8 @@ import datetime
 import csv
 
 #setup the board layout
-SPEDO_PIN = 11
-TACH_PIN = 13
+SPEDO_PIN = 12
+TACH_PIN = 11
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(SPEDO_PIN, GPIO.IN)
@@ -14,7 +14,7 @@ GPIO.setup(TACH_PIN, GPIO.IN)
 #initialize variables
 spedo_state = GPIO.input(SPEDO_PIN)
 tach_state = GPIO.input(TACH_PIN)
-firstTime = lastUpdate = last = datetime.datetime.now()
+firstTime = lastUpdate = last_tach = last_spedo = datetime.datetime.now()
 numberOfMagnets_spedo = numberOfMagnets_tach = 2
 rpm_spedo = rpm_tach = averagedRPM_spedo = averagedRPM_tach = 0
 alpha = .33 #filter constant
@@ -38,16 +38,16 @@ while True:
 
             #a leading edge of the magnet
             if GPIO.input(SPEDO_PIN) is False:
-                dt = max(1, (now - last).microseconds)/1000000.0
+                dt = max(1, (now - last_spedo).microseconds)/1000000.0
                 rpm_spedo = 60.0 / numberOfMagnets_spedo / dt
                 averagedRPM_spedo = averagedRPM_spedo*(1-alpha) + rpm_spedo*alpha
-                last = now
+                last_spedo = now
     
         #catch the case when the input stops
-        elif now - last > datetime.timedelta(seconds=0.25):
+        elif now - last_spedo > datetime.timedelta(seconds=0.25):
             print 'too slow'
             averagedRPM_spedo = max(1e-4,(averagedRPM_spedo * 2) / 3)
-            last = now
+            last_spedo = now
 
         #TACH
         #an edge of the magnet
@@ -56,16 +56,16 @@ while True:
 
             #a leading edge of the magnet
             if GPIO.input(TACH_PIN) is False:
-                dt = max(1, (now - last).microseconds)/1000000.0
+                dt = max(1, (now - last_tach).microseconds)/1000000.0
                 rpm_tach = 60.0 / numberOfMagnets_tach / dt
                 averagedRPM_tach = averagedRPM_tach*(1-alpha) + rpm_tach*alpha
-                last = now
+                last_tach = now
     
         #catch the case when the input stops
-        elif now - last > datetime.timedelta(seconds=0.25):
+        elif now - last_tach > datetime.timedelta(seconds=0.25):
             print 'too slow'
             averagedRPM_tach = max(1e-4,(averagedRPM_tach * 2) / 3)
-            last = now
+            last_tach = now
 
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=0.5):
