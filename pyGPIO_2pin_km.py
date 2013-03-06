@@ -17,7 +17,7 @@ tach_state = GPIO.input(TACH_PIN)
 firstTime = lastUpdate = last_tach = last_spedo = datetime.datetime.now()
 numberOfMagnets_spedo = numberOfMagnets_tach = 2
 rpm_spedo = rpm_tach = averagedRPM_spedo = averagedRPM_tach = 0
-alpha = .33 #filter constant
+alpha = .5 #filter constant
 
 #setup csv stuff
 dataFile = open('First_CVT_Test.csv','a')
@@ -46,7 +46,7 @@ while True:
         #catch the case when the input stops
         elif now - last_spedo > datetime.timedelta(seconds=0.25):
             print 'too slow'
-            averagedRPM_spedo = max(1e-4,(averagedRPM_spedo * 2) / 3)
+            averagedRPM_spedo = max(1e-4,(averagedRPM_spedo) / 3)
             last_spedo = now
 
         #TACH
