@@ -69,7 +69,7 @@ while True:
 
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=0.5):
-            print averagedRPM
+            print "Spedo: %3f Tach: %3f" % (averagedRPM_spedo, averagedRPM_tach)
             dataWriter.writerow([averagedRPM_spedo,averagedRPM_tach,round((now-firstTime).total_seconds(),1)])
             lastUpdate = now
             
