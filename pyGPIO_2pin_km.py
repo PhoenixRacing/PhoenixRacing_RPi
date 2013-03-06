@@ -75,5 +75,6 @@ while True:
             
     except (KeyboardInterrupt,SystemExit):
         print 'Shutting down...'
+        dataWriter.writerow([])
         dataFile.close()
         break
