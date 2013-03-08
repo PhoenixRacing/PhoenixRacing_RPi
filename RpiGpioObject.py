@@ -49,7 +49,7 @@ class PinManager(object):
 
 		#TODO perhaps in the future all of the GPIO devices will have a device id
 		#and we will actually track each of these device ids
-		return self.pins[pinNum]
+		return self.pins[pinNum][0]
 
 	def unregisterDeviceOnPin(self, pinNum):
 		#test against instantiated pins
@@ -70,16 +70,16 @@ class RpiGpioDevice(object):
 
 	def __init__(self, pinLayout):
 		self.pins = []
-		print pinLayout
+		self.thread = None
 		for pin, ioType in pinLayout.items():
-			print pin, ioType
 			self.pins.append(self.manager.registerDeviceOnPin(pin,ioType))
 
 	def run(self):
 		raise NotImplementedError
 
 	def start(self):
-		threading.Thread(self).start()
+		self.thread = threading.Thread(target = self)
+		self.thread.start()
 
 	def __del__(self):
 		#unregister all of the pins
