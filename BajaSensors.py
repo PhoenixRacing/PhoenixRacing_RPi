@@ -18,7 +18,8 @@ class Tachometer(RpiGpioDevice):
 
 	def run(self):
 		#wait for the first edge
-		while self.pins[0].get():
+		while self.pins[0].get() and self.alive:
+			#print 'waiting for first input'
 			pass
 
 		#loop until destroyed
