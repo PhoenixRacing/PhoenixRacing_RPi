@@ -1,0 +1,88 @@
+<dictwrapper: { u'epx': 4.426, 			Longitude Error		(meters)
+				u'epy': 3.249, 			Latitude Error		(meters)
+				u'epv': 5.462, 			Vertical Error		(meters)
+				u'ept': 0.005, 			Timestamp Error		(seconds)
+				u'lon': -71.262555, 	Longitude 	(+N/-S) (degrees)
+				u'eps': 8.85, 			Speed Error			(M/s)
+				u'lat': 42.292558333, 	Latitude 	(+W/-E)	(degrees)
+				u'tag': u'RMC', 
+				u'track': 223.99,		Degrees from true north
+				u'mode': 3, 			0=no mode,1=no fix,2=2D,3=3D
+				u'time': u'2013-03-08T03:28:22.000Z', 
+				u'device': u'/dev/ttyAMA0', 
+				u'climb': 0.0, 			Climb/Sink rate		(M/s)
+				u'alt': 63.8, 			Altitude			(Meters)
+				u'speed': 0.144, 		Speed over ground 	(M/s)
+				u'class': u'TPV'}>
+
+
+<dictwrapper: { u'gdop': 4.06, 
+				u'tdop': 2.34, 
+				u'vdop': 2.98, 
+				u'hdop': 1.46, 
+				u'pdop': 3.32, 
+				u'satellites': [<dictwrapper: {u'ss': 31, 
+											   u'el': 75, 
+											   u'PRN': 7, 
+											   u'az': 247, 
+											   u'used': True}>, 
+							    <dictwrapper: {u'ss': 0, 
+							    			   u'el': 60, 
+							    			   u'PRN': 19, 
+							    			   u'az': 51, 
+							    			   u'used': False}>, 
+							    <dictwrapper: {u'ss': 16, 
+							    			   u'el': 52, 
+							    			   u'PRN': 11, 
+							    			   u'az': 157, 
+							    			   u'used': True}>, 
+							    <dictwrapper: {u'ss': 19, 
+							    			   u'el': 50, 
+							    			   u'PRN': 8, 
+							    			   u'az': 309, 
+							    			   u'used': True}>, 
+							    <dictwrapper: {u'ss': 0, 
+							    			   u'el': 36, 
+							    			   u'PRN': 3, 
+							    			   u'az': 56, 
+							    			   u'used': False}>, 
+							    <dictwrapper: {u'ss': 31, 
+							    			   u'el': 29, 
+							    			   u'PRN': 1, 
+							    			   u'az': 164, 
+							    			   u'used': True}>, 
+							    <dictwrapper: {u'ss': 34, 
+							    			   u'el': 29, 
+							    			   u'PRN': 51, 
+							    			   u'az': 227, 
+							    			   u'used': False}>, 
+								<dictwrapper: {u'ss': 29, 
+											   u'el': 22, 
+											   u'PRN': 28, 
+											   u'az': 289, 
+											   u'used': True}>, 
+								<dictwrapper: {u'ss': 0, 
+											   u'el': 19, 
+											   u'PRN': 6, 
+											   u'az': 55, 
+											   u'used': False}>, 
+								<dictwrapper: {u'ss': 0, 
+											   u'el': 12, 
+											   u'PRN': 16, 
+											   u'az': 93, 
+											   u'used': False}>, 
+								<dictwrapper: {u'ss': 31, 
+											   u'el': 11, 
+											   u'PRN': 13, 
+											   u'az': 205, 
+											   u'used': True}>, 
+								<dictwrapper: {u'ss': 0, 
+											   u'el': 10, 
+											   u'PRN': 26, 
+											   u'az': 323, 
+											   u'used': False}>], 
+				u'ydop': 0.87, 
+				u'tag': u'GSV', 
+				u'xdop': 1.18, 
+				u'device': u'/dev/ttyAMA0', 
+				u'class': u'SKY'}>
