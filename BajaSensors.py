@@ -17,6 +17,11 @@ class Tachometer(RpiGpioDevice):
 		return self.averagedRPM
 
 	def run(self):
+		#wait for the first edge
+		while self.pins[0].get():
+			pass
+
+		#loop until destroyed
 		while self.alive:
 			now = datetime.datetime.now()
 			state = self.pins[0].get()
@@ -31,7 +36,7 @@ class Tachometer(RpiGpioDevice):
 					rpm = 60.0 / self.numberOfMagnets / dt
 					self.averagedRPM = self.averagedRPM*(1-self.alpha) + rpm*self.alpha
 					self.lastInputTime = self.lastUpdateTime = now
-
+			
 			#catch the case when the input stops
 			elif now - self.lastUpdateTime > datetime.timedelta(seconds=0.25):
 				dt = max(1, (now - self.lastInputTime).total_seconds())
