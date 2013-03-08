@@ -1,5 +1,5 @@
 from RpiGpioObject import *
-import datetime time
+import datetime, time
 
 class Tachometer(RpiGpioDevice):
 	"""docstring for Tachometer"""
