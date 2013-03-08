@@ -11,6 +11,7 @@ class RpiGpioPin(object):
 	"""The wrapper for an individual pin on the RPi"""
 	def __init__(self,pinNum,ioType):
 		self.pinNum = pinNum
+		self.ioType = ioType
 		GPIO.setup(pinNum, ioType)
 
 	def get(self):
