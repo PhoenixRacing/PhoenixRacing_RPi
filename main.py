@@ -1,4 +1,4 @@
-import BajaSensors
+from BajaSensors import *
 
 tach = Tachometer(11)
 
