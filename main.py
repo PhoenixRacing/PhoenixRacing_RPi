@@ -10,3 +10,4 @@ while True:
 		time.sleep(.1)
 	except KeyboardInterrupt, SystemExit:
 		tach.stop()
+		break
