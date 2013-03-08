@@ -74,6 +74,9 @@ class RpiGpioDevice(object):
 		for pin, ioType in pinLayout.items():
 			self.pins.append(self.manager.registerDeviceOnPin(pin,ioType))
 
+	def __call__(self):
+		self.run()
+
 	def run(self):
 		raise NotImplementedError
 
