@@ -70,7 +70,9 @@ class RpiGpioDevice(object):
 
 	def __init__(self, pinLayout):
 		self.pins = []
-		for pin, ioType in pinLayout:
+		print pinLayout
+		for pin, ioType in pinLayout.items():
+			print pin, ioType
 			self.pins.append(self.manager.registerDeviceOnPin(pin,ioType))
 
 	def run(self):
