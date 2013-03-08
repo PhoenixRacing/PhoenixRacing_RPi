@@ -37,9 +37,11 @@ class Tachometer(RpiGpioDevice):
 				print 'too slow'
 				dt = max(1, (now - self.lastInputTime).microseconds)/1000000.0
 				rpm = 60.0 / self.numberOfMagnets / dt
-				self.averagedRPM = self.averagedRPM*(1-self.alpha) + rpm*self.alpha
-				if self.averagedRPM < 1e-4:
+				averagedRPM = self.averagedRPM*(1-self.alpha) + rpm*self.alpha
+				if averagedRPM < 1e-4:
 					self.averagedRPM = 0
+				else:
+					self.averagedRPM = averagedRPM
 				self.lastUpdateTime = now
 
 	def stop(self):
