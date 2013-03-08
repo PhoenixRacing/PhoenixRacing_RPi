@@ -1,5 +1,5 @@
 from RpiGpioObject import *
-import datetime
+import datetime time
 
 class Tachometer(RpiGpioDevice):
 	"""docstring for Tachometer"""
@@ -7,11 +7,12 @@ class Tachometer(RpiGpioDevice):
 		super(Tachometer, self).__init__({pin:True})
 		self.alive = True
 		self.lastEdgeTime = datetime.datetime.now()
-		self.updateTime = 
+		self.updateTime = .01
 
 	def run(self):
 		while self.alive:
 			print 'I\'m alive'
+			time.sleep(self.updateTime)
 
 
 	def stop(self):
