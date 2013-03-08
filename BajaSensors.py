@@ -6,8 +6,8 @@ class Tachometer(RpiGpioDevice):
 	def __init__(self, pin):
 		super(Tachometer, self).__init__({pin:True})
 		self.alive = True
-		self.lastRisingEdgeTime = datetime.datetime.now()
-		self.updatePeriod = .01
+		self.lastUpdateTime = self.lastInputTime = datetime.datetime.now()
+		#self.updatePeriod = .01
 		self.lastState = self.pins[0].get()
 		self.averagedRPM = 0
 		self.numberOfMagnets = 2
@@ -27,16 +27,20 @@ class Tachometer(RpiGpioDevice):
 	
 				#a rising edge of the magnet
 				if not state:
-					dt = max(1, (now - self.lastRisingEdgeTime).microseconds)/1000000.0
+					dt = max(1, (now - self.lastInputTime).microseconds)/1000000.0
 					rpm = 60.0 / self.numberOfMagnets / dt
 					self.averagedRPM = self.averagedRPM*(1-self.alpha) + rpm*self.alpha
-					self.lastRisingEdgeTime = now
+					self.lastInputTime = self.lastUpdateTime = now
 
 			#catch the case when the input stops
-			elif now - self.lastRisingEdgeTime > datetime.timedelta(seconds=0.25):
+			elif now - self.lastUpdateTime > datetime.timedelta(seconds=0.25):
 				print 'too slow'
-				self.averagedRPM = max(1e-4,(self.averagedRPM * 2) / 3)
-				self.lastRisingEdgeTime = now
+				dt = max(1, (now - self.lastInputTime).microseconds)/1000000.0
+				rpm = 60.0 / self.numberOfMagnets / dt
+				self.averagedRPM = self.averagedRPM*(1-self.alpha) + rpm*self.alpha
+				if self.averagedRPM < 1e-4:
+					self.averagedRPM = 0
+				self.lastUpdateTime = now
 
 	def stop(self):
 		self.alive = False
