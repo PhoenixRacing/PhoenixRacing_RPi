@@ -53,4 +53,5 @@ class Tachometer(RpiGpioDevice):
 	def stop(self):
 		self.alive = False
 
-class Tachometer(RpiSerialDevice):
+class GPS(RpiSerialDevice):
+	pass
