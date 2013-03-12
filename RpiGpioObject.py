@@ -2,10 +2,82 @@ import RPi.GPIO as GPIO
 from GpioExceptions import *
 import threading
 
+
+"""#####"""
+"""SETUP"""
+"""#####"""
+
 GPIO.setmode(GPIO.BOARD)
 
-INPUT = True
-OUTPUT = False
+def enum(*sequential):
+    return type('Enum', (), dict(zip(sequential, range(len(sequential)))))
+
+IO_NAMES = ('INPUT', 'OUTPUT', 'SDA', 'SCL', 'GPCLK0',\
+		'SERIAL_TXD', 'SERIAL_RXD', 'PCM_CLK', 'PCM_DOUT',\
+		'MOSI','MISO','SCLK','CE0','CE1')
+IO_TYPES = enum(*IO_NAMES)
+
+pinList = [3,5,7,8,10,11,12,13,15,16,18,19,21,22,23,24,26]
+ioTypes = [{IO_TYPES.INPUT,IO_TYPES.OUTPUT}]*len(pinList)
+validPins = dict(zip(pinList,ioType))
+validPins[3].add(IO_TYPES.SDA)
+validPins[5].add(IO_TYPES.SCL)
+validPins[7].add(IO_TYPES.GPCLK0)
+validPins[8].add(IO_TYPES.SERIAL_TXD)
+validPins[10].add(IO_TYPES.SERIAL_RXD)
+validPins[12].add(IO_TYPES.PCM_CLK)
+validPins[13].add(IO_TYPES.PCM_DOUT)
+validPins[19].add(IO_TYPES.MOSI)
+validPins[21].add(IO_TYPES.MISO)
+validPins[23].add(IO_TYPES.SCLK)
+validPins[24].add(IO_TYPES.CE0)
+validPins[26].add(IO_TYPES.CE1)
+
+
+
+"""##########"""
+"""Exceptions"""
+"""##########"""
+"""
+Abstract Classes
+"""
+class PinException(Exception):
+	def __init__(self,pin):
+		self.pinNum = pin
+
+class PinIOException(PinException):
+	def __init__(self,pin,ioType):
+		super(PinIOException, self).__init__(pin)
+		self.ioType = ioType
+
+"""
+Implementation Classes
+"""
+class InvalidPinException(PinException):
+	def __str__(self):
+		return 'Pin %d is not a valid GPIO pin' % (self.pinNum,)
+
+class GhostPinException(PinException):
+	def __str__(self):
+		return 'Pin %d is not currently registered' % (self.pinNum,)
+
+class PinConflictException(PinIOException):
+	def __str__(self):
+		return 'Pin %d is already setup as a(n) %s pin' % \
+		(self.pinNum,IO_NAMES[self.ioType])
+
+class InvalidPinAccessException(PinIOException):
+	def __init__(self,pin,ioType,ioViolation):
+		super(InvalidPinAccessException, self).__init__(pin,ioType)
+		self.ioViolation = ioViolation
+
+	def __str__(self):
+		return 'Pin %d is an %s pin and you attempted to access it like an %s pin'\
+		% (self.pinNum,IO_NAMES[self.ioType],IO_NAMES[self.ioViolation])
+
+"""#######"""
+"""Classes"""
+"""#######"""
 
 class RpiGpioPin(object):
 	"""The wrapper for an individual pin on the RPi"""
@@ -14,34 +86,36 @@ class RpiGpioPin(object):
 		self.ioType = ioType
 		GPIO.setup(pinNum, ioType)
 
+	#TODO make these methods more robust (i.e. handle all of the IO_TYPES)
 	def get(self):
-		if self.ioType:
+		if self.ioType is IO_TYPES.INPUT:
 			return GPIO.input(self.pinNum)
 		else:
-			raise InvalidPinAccessException(self.pinNum,ioType)
+			raise InvalidPinAccessException(self.pinNum,self.ioType,IO_TYPES.INPUT)
 
 	def set(self,val):
-		if self.ioType:
-			raise InvalidPinAccessException(self.pinNum,ioType)
-		else:
+		if self.ioType is IO_TYPES.OUTPUT
 			GPIO.output(self.pinNum,val)
-
+		else:
+			raise InvalidPinAccessException(self.pinNum,self.ioType,IO_TYPES.OUTPUT)
 
 
 class PinManager(object):
 	"""The manages the instantiation and destruction of pins"""
-	validPins = {8, 10, 12, 16, 18, 22, 24, 26, 3, 5, 7, 11, 13, 15, 19, 21, 23}
 	
 	def __init__(self):
+		#this will be a dictionary that maps pin numbers to a list of a
+		#RpiGpioPin object and a counter for the devices registered on the pin
+		#pins -> {pinNum : [RpiGpioPin, deviceCounter]}
 		self.pins = dict()
 
 	def registerDeviceOnPin(self, pinNum, ioType):
 		#test against valid pins
-		if pinNum not in self.validPins:
+		if pinNum not in validPins:
 			raise InvalidPinException(pinNum)
 
 		#test for IO conflicts
-		if (pinNum in self.pins) and (self.pins[pinNum].ioType is ioType):
+		if (pinNum in self.pins) and (self.pins[pinNum].ioType is not ioType):
 			raise PinConflictException(pinNum,ioType)
 
 		#register the device
@@ -55,14 +129,13 @@ class PinManager(object):
 	def unregisterDeviceOnPin(self, pinNum):
 		#test against instantiated pins
 		if pinNum not in self.pins:
-			raise GhostPinException
+			raise GhostPinException(pinNum)
 
 		self.pins[pinNum][1] -= 1
 
 		#if the key is unregistered from all of its users delete it
 		if self.pins[pinNum][1] == 0:
 			del self.pins[pinNum]
-
 
 
 class RpiGpioDevice(object):

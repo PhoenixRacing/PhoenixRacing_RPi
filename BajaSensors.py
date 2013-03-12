@@ -1,8 +1,10 @@
 from RpiGpioObject import *
-import datetime, time
+from dateutil import tz
+import datetime, time, gps
 
 class Tachometer(RpiGpioDevice):
-	"""docstring for Tachometer"""
+	"""A device that uses a hall effect sensor and a magnet on
+	a rotating shaft to estimate the angular speed of the shaft."""
 	def __init__(self, pin):
 		super(Tachometer, self).__init__({pin:True})
 		self.alive = True
@@ -50,3 +52,5 @@ class Tachometer(RpiGpioDevice):
 
 	def stop(self):
 		self.alive = False
+
+class Tachometer(RpsSerialDevice):
