@@ -162,3 +162,12 @@ class RpiGpioDevice(object):
 		#unregister all of the pins
 		for pin in self.pins:
 			self.manager.unregisterDeviceOnPin(pin.pinNum)
+
+class RpiSerialDevice(RpiGpioDevice):
+	"""A device that can communicate over the serial line"""
+	#TODO implement this class (i.e. learn more about how the RPi deals with serial communication)
+	#TODO it would probably be bad to have more than one device communicate over the
+	#     serial line at once, so maybe there should be a static (class) lock on the
+	#     write method
+	def __init__(self):
+		super(RpiSerialDevice, self).__init__(pin,{pinList})
