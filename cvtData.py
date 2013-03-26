@@ -41,8 +41,8 @@ def get_tests_csv(filename):
 			test.append(list(rawdata))
 	return test
 
-def plotCVTData(cvt):
-	t = cvt.tests.values()[0]
+def plotCVTData(cvt, test_no = 0):
+	t = cvt.tests.values()[test_no]
 	tnew = np.linspace(t.tach.min(), t.tach.max(), len(t.speedo))
 	smooth = spline(t.tach, t.speedo, tnew)
 
@@ -63,6 +63,6 @@ def main():
 	tests = get_tests_csv(sys.argv[1])
 	cvt = cvtData()
 	cvt.addTestData(tests)
-	plotCVTData(cvt)
+	plotCVTData(cvt,int(sys.argv[2]))
 
 main()
