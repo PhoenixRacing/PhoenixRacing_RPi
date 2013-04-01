@@ -18,7 +18,7 @@
 # MCU = atmega168
 
 # Target file name (without extension).
-TARGET = main
+TARGET = echoSPI
 
 # Programming hardware: type avrdude -c ?
 # to get a full listing.

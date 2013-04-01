@@ -1,37 +1,73 @@
-/*
-* Hackaday.com AVR Tutorial firmware
-* written by: Mike Szczys (@szczys)
-* 10/24/2010
-*
-* ATmega168
-* Blinks one LED conneced to PD0
-*
-* http://hackaday.com/2010/10/25/avr-programming-02-the-hardware/
-*/
-
+//include libraries
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-int main(void)
-{
+//define missing boolean compatibility
+typedef char bool;
+#define true 1
+#define false 0
 
-  //Setup the clock
-  cli();			//Disable global interrupts
-  TCCR1B |= 1<<CS11 | 1<<CS10;	//Divide by 64
-  OCR1A = 15624;		//Count 15624 cycles for 1 second interrupt
-  TCCR1B |= 1<<WGM12;		//Put Timer/Counter1 in CTC mode
-  TIMSK1 |= 1<<OCIE1A;		//enable timer compare interrupt
-  sei();			//Enable global interrupts
+//macros
+#define START_CHAR 0x0F
+#define END_CHAR 0x0E
+#define BUFFER_SIZE 4
 
-  //Setup the I/O for the LED
+//function prototypes
+int main(void);
+void setup(void);
+void loop(void);
+void updatePeripherals(void);
 
-  DDRD |= (1<<0);		//Set PortD Pin0 as an output
-  PORTD |= (1<<0);		//Set PortD Pin0 high to turn on LED
 
-  while(1) { }			//Loop forever, interrupts do the rest
+static bool buttonState = false;
+static char data[BUFFER_SIZE];
+static int dataPos = 0;
+
+int main(void){
+	setup();
+
+	while (true){
+		loop();
+	}
 }
 
-ISR(TIMER1_COMPA_vect)		//Interrupt Service Routine
-{
-  PORTD ^= (1<<0);		//Use xor to toggle the LED
+void setup(void){
+	// initialize the SPI as a slave with interrupts enables
+	// and clock frequency of the oscillator freq (8Mhz)/16
+
+	SPCR = (1 << SPE) | (1 << SPR0) | (1 << SPIE);
+
+	// setup PortD Pin0 as an output for testing purposed
+	DDRD |= (1 << DDD0);		//Set PortD Pin0 as an output
+	PORTD |= (1 << PORTD0);	//Set PortD Pin0 high to turn on LED
+}
+
+void loop(void){
+	// code that is meant to executed each loop goes here
+	updatePeripherals();
+}
+
+void updatePeripherals(void){
+	int a=0;
+}
+
+ISR(SPI_STC_vect){
+	//define the interrupt behavior for spi serial transfer complete
+	
+	switch (SPDR){
+		case START_CHAR:
+			dataPos = 0;
+			break;
+		case END_CHAR:
+			updatePeripherals();
+			break;
+		default:
+			data[dataPos] = SPDR;
+	} 
+}
+
+ISR(PCINT0_vect){
+	//define the behavior for a signal switch on pin PB0
+	buttonState = PORTD & PORTD0;
+	SPDR = buttonState;
 }
