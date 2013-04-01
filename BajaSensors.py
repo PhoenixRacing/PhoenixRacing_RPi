@@ -1,8 +1,10 @@
 from RpiGpioObject import *
-import datetime, time
+from dateutil import tz
+import datetime, time, gps
 
 class Tachometer(RpiGpioDevice):
-	"""docstring for Tachometer"""
+	"""A device that uses a hall effect sensor and a magnet on
+	a rotating shaft to estimate the angular speed of the shaft."""
 	def __init__(self, pin):
 		super(Tachometer, self).__init__({pin:True})
 		self.alive = True
@@ -17,6 +19,12 @@ class Tachometer(RpiGpioDevice):
 		return self.averagedRPM
 
 	def run(self):
+		#wait for the first edge
+		while self.pins[0].get() and self.alive:
+			#print 'waiting for first input'
+			pass
+
+		#loop until destroyed
 		while self.alive:
 			now = datetime.datetime.now()
 			state = self.pins[0].get()
@@ -31,7 +39,7 @@ class Tachometer(RpiGpioDevice):
 					rpm = 60.0 / self.numberOfMagnets / dt
 					self.averagedRPM = self.averagedRPM*(1-self.alpha) + rpm*self.alpha
 					self.lastInputTime = self.lastUpdateTime = now
-
+			
 			#catch the case when the input stops
 			elif now - self.lastUpdateTime > datetime.timedelta(seconds=0.25):
 				dt = max(1, (now - self.lastInputTime).total_seconds())
@@ -44,3 +52,6 @@ class Tachometer(RpiGpioDevice):
 
 	def stop(self):
 		self.alive = False
+
+class GPS(RpiSerialDevice):
+	pass
