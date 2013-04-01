@@ -1,1 +1,12 @@
 *.pyc
+*.jpg
+
+
+*.eep
+*.elf
+*.d
+*.lss
+*.lst
+*.map
+*.o
+*.sym

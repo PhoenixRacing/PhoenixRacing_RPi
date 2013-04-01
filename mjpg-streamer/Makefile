@@ -40,7 +40,6 @@ PLUGINS += input_testpicture.so
 #PLUGINS += output_autofocus.so
 #PLUGINS += input_gspcav1.so
 PLUGINS += input_file.so
-#echo $(PLUGINS)
 # PLUGINS += output_rtsp.so
 # PLUGINS += output_ptp2.so # commented out because it depends on libgphoto
 # PLUGINS += input_control.so # commented out because the output_http does it's job
