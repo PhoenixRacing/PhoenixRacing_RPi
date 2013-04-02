@@ -4,8 +4,7 @@ import itertools
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import spline
-import db_wrapper
+# from scipy.interpolate import spline
 
 
 class testData (object):
@@ -43,7 +42,7 @@ def get_tests_csv(filename):
 	return test
 
 def plotCVTData(cvt):
-	t = cvt.tests.values()
+	t = cvt.tests.values()[0]
 	# tnew = np.linspace(t.speedo.min(), t.speedo.max(), len(t.speedo))
 	# smooth = spline(t.speedo, t.tacho, tnew)
 
@@ -58,16 +57,9 @@ def plotCVTData(cvt):
 	plt.savefig(str(t.dateTime)+'.png', bbox_inches=0)
 	return str(t.dateTime)+'.png'
 
-def upload_dropbox(results_file, fig):
-	db = db_wrapper.DropboxTerm()
-	db_wrapper.do_put(results_file, 'cvt_tests/'+results_file)
-	db_wrapper.do_put(fig, 'cvt_tests/'+fig)
-
-def main(results_file = sys.argv[1]):
+def save_plot(results_file):
 	tests = get_tests_csv(results_file)
 	cvt = cvtData()
 	cvt.addTestData(tests)
 	fig = plotCVTData(cvt)
-	upload_dropbox(results_file, fig)
-
-main()
+	return fig

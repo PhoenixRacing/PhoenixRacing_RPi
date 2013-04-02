@@ -1,7 +1,15 @@
 from __future__ import division
+
 import RPi.GPIO as GPIO
 import datetime
 import csv
+import db_wrapper
+import cvt_test_mod as CVT
+
+def upload_dropbox(results_file, fig):
+    db = db_wrapper.DropboxTerm()
+    db_wrapper.do_put(results_file, 'cvt_tests/'+results_file)
+    db_wrapper.do_put(fig, 'cvt_tests/'+fig)
 
 #setup the board layout
 SPEDO_PIN = 12
@@ -20,18 +28,19 @@ rpm_spedo = rpm_tach = averagedRPM_spedo = averagedRPM_tach = 0
 alpha = .5 #filter constant
 
 #setup csv stuff
-dataFile = open('First_CVT_Test.csv','a')
+f_name = "../cvt_test/CVT_Test_" + str(datetime.datetime.now()) + ".csv"
+dataFile = open(f_name,'w+')
 dataWriter = csv.writer(dataFile)
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
 dataWriter.writerow([initMsg])
-# dataWriter.writerow(['Speedometer','Tachometer','Time since start'])
+# dataWriter.writerow(['Spedometer','Tachometer','Time since start'])
 
 #main loop
 while True:
     try:
         now = datetime.datetime.now()
         
-        #SPEDO
+        #SPEEDO
         #an edge of the magnet
         if GPIO.input(SPEDO_PIN) is not spedo_state:
             spedo_state = not spedo_state
@@ -70,11 +79,18 @@ while True:
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=0.5):
             print "Spedo: %3f Tach: %3f" % (averagedRPM_spedo, averagedRPM_tach)
-            dataWriter.writerow([averagedRPM_spedo,averagedRPM_tach,round((now-firstTime).total_seconds(),1)])
-            lastUpdate = now
+            if averagedRPM_tach > 0.01 or averagedRPM_spedo > 0.01:
+                dataWriter.writerow([averagedRPM_spedo,averagedRPM_tach,round((now-firstTime).total_seconds(),1)])
+                lastUpdate = now
             
     except (KeyboardInterrupt,SystemExit):
         print 'Shutting down...'
         dataWriter.writerow([])
         dataFile.close()
+
+        #create plot png and upload csv and png to dropbox
+        fig = CVT.save_plot(f_name)
+        upload_dropbox(f_name, fig)
+
         break
+        
