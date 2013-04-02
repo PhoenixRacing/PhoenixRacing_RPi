@@ -1,7 +1,12 @@
 from __future__ import division
+
+from dbupload import upload_file, DropboxConnection
+from getpass import getpass
+
 import RPi.GPIO as GPIO
 import datetime
 import csv
+
 
 #setup the board layout
 SPEDO_PIN = 12
@@ -20,7 +25,8 @@ rpm_spedo = rpm_tach = averagedRPM_spedo = averagedRPM_tach = 0
 alpha = .5 #filter constant
 
 #setup csv stuff
-dataFile = open('First_CVT_Test.csv','a')
+f_name = "CVT_Test_" + datetime.datetime.now() + ".csv"
+dataFile = open(f_name,'rw')
 dataWriter = csv.writer(dataFile)
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
 dataWriter.writerow([initMsg])
@@ -31,7 +37,7 @@ while True:
     try:
         now = datetime.datetime.now()
         
-        #SPEDO
+        #SPEEDO
         #an edge of the magnet
         if GPIO.input(SPEDO_PIN) is not spedo_state:
             spedo_state = not spedo_state
@@ -70,11 +76,19 @@ while True:
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=0.5):
             print "Spedo: %3f Tach: %3f" % (averagedRPM_spedo, averagedRPM_tach)
-            dataWriter.writerow([averagedRPM_spedo,averagedRPM_tach,round((now-firstTime).total_seconds(),1)])
-            lastUpdate = now
+            if averagedRPM_tach > 0.01 or averagedRPM_spedo > 0.01
+                dataWriter.writerow([averagedRPM_spedo,averagedRPM_tach,round((now-firstTime).total_seconds(),1)])
+                lastUpdate = now
             
     except (KeyboardInterrupt,SystemExit):
         print 'Shutting down...'
         dataWriter.writerow([])
         dataFile.close()
+        
+        email = "olinphoenixracing@gmail.com"
+        password = "bajabaja"
+
+        conn = DropboxConnection(email, password)
+        conn.upload_file(fname, "/cvt_tests", f_name)
+
         break
