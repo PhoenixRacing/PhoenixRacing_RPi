@@ -93,5 +93,6 @@ while True:
         import cvt_test_mod as CVT
         fig = CVT.save_plot(f_name)
         upload_dropbox(f_name, fig)
+        print "files uploaded"
         os.remove(fig)
         break
