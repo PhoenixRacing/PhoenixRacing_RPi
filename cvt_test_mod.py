@@ -5,6 +5,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import spline
+import db_wrapper
 
 
 class testData (object):
@@ -41,35 +42,32 @@ def get_tests_csv(filename):
 			test.append(list(rawdata))
 	return test
 
-def plotCVTData(cvt, test_no = 0):
-	t = cvt.tests.values()[test_no]
-	tnew = np.linspace(t.tach.min(), t.tach.max(), len(t.speedo))
-	smooth = spline(t.tach, t.speedo, tnew)
+def plotCVTData(cvt):
+	t = cvt.tests.values()
+	# tnew = np.linspace(t.speedo.min(), t.speedo.max(), len(t.speedo))
+	# smooth = spline(t.speedo, t.tacho, tnew)
 
-	plt.plot(t.speedo, t.tach, 'r')
+	plt.plot(t.speedo, t.tach, 'ro-')
 	plt.ylabel('RPM')
 	plt.xlabel('Speed')
 
-	plt.title('data')
+	plt.title(str(t.dateTime))
 
 	plt.xlim(xmin=0)
 	plt.ylim(ymin=0)
-	plt.show()
+	plt.savefig(str(t.dateTime)+'.png', bbox_inches=0)
+	return str(t.dateTime)+'.png'
 
-	# j = 0
-	# i = len(cvt.tests.values())
-	# for k,v in cvt.tests.iteritems():
-	# 	plt.subplot(i, 1, j)
-	# 	j += 1
-	# 	plt.plot(v.speedo, v.tach)
-	# 	plt.ylabel('RPM')
-	# 	plt.xlabel('Speed')
-	# 	plt.title(str(k))
+def upload_dropbox(results_file, fig):
+	db = db_wrapper.DropboxTerm()
+	db_wrapper.do_put(results_file, 'cvt_tests/'+results_file)
+	db_wrapper.do_put(fig, 'cvt_tests/'+fig)
 
-def main():
-	tests = get_tests_csv(sys.argv[1])
+def main(results_file = sys.argv[1]):
+	tests = get_tests_csv(results_file)
 	cvt = cvtData()
 	cvt.addTestData(tests)
-	plotCVTData(cvt)
+	fig = plotCVTData(cvt)
+	upload_dropbox(results_file, fig)
 
 main()
