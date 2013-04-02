@@ -3,6 +3,7 @@ from __future__ import division
 import RPi.GPIO as GPIO
 import datetime
 import csv
+import os
 import db_wrapper
 
 def upload_dropbox(results_file, fig):
@@ -91,6 +92,5 @@ while True:
         import cvt_test_mod as CVT
         fig = CVT.save_plot(f_name)
         upload_dropbox(f_name, fig)
-
+        os.remove(fig)
         break
-        
