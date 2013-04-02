@@ -4,7 +4,6 @@ import RPi.GPIO as GPIO
 import datetime
 import csv
 import db_wrapper
-import cvt_test_mod as CVT
 
 def upload_dropbox(results_file, fig):
     db = db_wrapper.DropboxTerm()
@@ -89,6 +88,7 @@ while True:
         dataFile.close()
 
         #create plot png and upload csv and png to dropbox
+        import cvt_test_mod as CVT
         fig = CVT.save_plot(f_name)
         upload_dropbox(f_name, fig)
 
