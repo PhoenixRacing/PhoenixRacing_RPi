@@ -76,7 +76,7 @@ while True:
         #print and log data
         if now - lastUpdate > datetime.timedelta(seconds=0.5):
             print "Spedo: %3f Tach: %3f" % (averagedRPM_spedo, averagedRPM_tach)
-            if averagedRPM_tach > 0.01 or averagedRPM_spedo > 0.01
+            if averagedRPM_tach > 0.01 or averagedRPM_spedo > 0.01:
                 dataWriter.writerow([averagedRPM_spedo,averagedRPM_tach,round((now-firstTime).total_seconds(),1)])
                 lastUpdate = now
             
@@ -88,7 +88,10 @@ while True:
         email = "olinphoenixracing@gmail.com"
         password = "bajabaja"
 
-        conn = DropboxConnection(email, password)
-        conn.upload_file(fname, "/cvt_tests", f_name)
-
-        break
+        try:
+            conn = DropboxConnection(email, password)
+            conn.upload_file(fname, "/cvt_tests", f_name)
+            print "upload failed"
+            break
+        except:
+            break
