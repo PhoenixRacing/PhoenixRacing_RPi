@@ -1,7 +1,7 @@
 from __future__ import division
 
-from dbupload import upload_file, DropboxConnection
-from getpass import getpass
+# from dbupload import upload_file, DropboxConnection
+# from getpass import getpass
 
 import RPi.GPIO as GPIO
 import datetime
@@ -91,7 +91,7 @@ while True:
         try:
             conn = DropboxConnection(email, password)
             conn.upload_file(fname, "/cvt_tests", f_name)
-            print "upload failed"
             break
         except:
+            print "upload failed"
             break
