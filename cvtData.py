@@ -46,7 +46,14 @@ def plotCVTData(cvt, test_no = 0):
 	tnew = np.linspace(t.tach.min(), t.tach.max(), len(t.speedo))
 	smooth = spline(t.tach, t.speedo, tnew)
 
-	plt.plot(t.tach, t.speedo)
+	plt.plot(t.speedo, t.tach, 'r')
+	plt.ylabel('RPM')
+	plt.xlabel('Speed')
+
+	plt.title('data')
+
+	plt.xlim(xmin=0)
+	plt.ylim(ymin=0)
 	plt.show()
 
 	# j = 0
