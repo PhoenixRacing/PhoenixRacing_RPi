@@ -24,7 +24,7 @@ dataFile = open('First_CVT_Test.csv','a')
 dataWriter = csv.writer(dataFile)
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
 dataWriter.writerow([initMsg])
-dataWriter.writerow(['Speedometer','Tachometer','Time since start'])
+# dataWriter.writerow(['Speedometer','Tachometer','Time since start'])
 
 #main loop
 while True:

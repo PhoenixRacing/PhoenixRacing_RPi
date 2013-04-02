@@ -63,6 +63,6 @@ def main():
 	tests = get_tests_csv(sys.argv[1])
 	cvt = cvtData()
 	cvt.addTestData(tests)
-	plotCVTData(cvt,int(sys.argv[2]))
+	plotCVTData(cvt)
 
 main()
