@@ -13,8 +13,8 @@ def upload_dropbox(results_file, fig):
     db.do_put(fig, 'cvt_tests/'+fig)
 
 #setup the board layout
-SPEDO_PIN = 12
-TACH_PIN = 11
+SPEDO_PIN = 16
+TACH_PIN = 15
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(SPEDO_PIN, GPIO.IN)
@@ -92,7 +92,7 @@ while True:
         #create plot png and upload csv and png to dropbox
         import cvt_test_mod as CVT
         fig = CVT.save_plot(f_name)
-        upload_dropbox(f_name, fig)
-        print "files uploaded"
-        os.remove(fig)
+        # upload_dropbox(f_name, fig)
+        # print "files uploaded"
+        # os.remove(fig)
         break
