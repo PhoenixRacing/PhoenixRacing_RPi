@@ -1,0 +1,16 @@
+all: main.hex
+	sudo avrdude -P gpio -c gpio -p attiny88 -U flash:w:main.hex
+	rm -rf *.elf
+	rm -rf *.o
+
+main.hex: main.elf
+	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
+
+main.elf: main.o
+	avr-gcc -g -mmcu=attiny88 -o main.elf main.o
+
+main.o: main.c
+	avr-gcc -g -Os -mmcu=attiny88 -c main.c
+
+clean:
+	rm -rf *.hex

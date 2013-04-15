@@ -64,7 +64,7 @@ void loop(void){
 **SPI**
 *******/
 static int dataPos = 0;
-static char* statePtrs[21] = {&(carState.tachDisplay), &(carState.numDisplay1.digits[0]),\
+static char* statePtrs[20] = {&(carState.tachDisplay), &(carState.numDisplay1.digits[0]),\
 	&(carState.numDisplay1.digits[1]), &(carState.numDisplay1.digits[2]), &(carState.numDisplay1.digits[3]),\
 	&(carState.numDisplay1.decimal), &(carState.numDisplay1.colon), &(carState.numDisplay2.digits[0]),\
 	&(carState.numDisplay2.digits[1]), &(carState.numDisplay2.digits[2]), &(carState.numDisplay2.digits[3]),\
@@ -75,29 +75,28 @@ static char* statePtrs[21] = {&(carState.tachDisplay), &(carState.numDisplay1.di
 void initializeSPI(void){
 	//Initialize the SPI as a slave with interrupts enabled
 	//and clock frequency of the oscillator freq (8Mhz)/16
-	SPCR = (1 << SPE) | (1 << SPR0) | (1 << SPIE);
-}
-
-void updateCarState(char data, int position){
-
+	DDRB = 1<<DDB4;
+	SPCR |= (1 << SPE) | (1 << SPIE);
 }
 
 ISR(SPI_STC_vect){
 	//define the interrupt behavior for spi serial transfer complete
-	switch (SPDR){
+	char data = SPDR;
+	switch (data){
 		case START_CHAR:
 			dataPos = 0;
 			break;
 		case END_CHAR:
-			break;
 			updateTachSpectrum();
 			updateButton();
 			updateIndicators();
+			break;
 		default:
-			if (dataPos >= sizeof(statePtrs)){
-				*(statePtrs[dataPos]) = SPDR;
+			if (dataPos < sizeof(statePtrs)){
+				*(statePtrs[dataPos]) = data;
+				dataPos++;
 			}
-			dataPos++;
+			
 	}
 }
 

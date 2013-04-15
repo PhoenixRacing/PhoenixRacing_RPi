@@ -45,10 +45,8 @@ void loop(void);
 
 /* SPI */
 void initializeSPI(void);
-//TODO: change these characters to bytes that can actually be reserved
-#define START_CHAR 0x0F
-#define END_CHAR 0x0E
-#define BUFFER_SIZE 16
+#define START_CHAR 0x10
+#define END_CHAR 0x11
 
 /* Tachometer */
 void initializeTachSpectrum(void);
