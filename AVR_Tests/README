@@ -1,0 +1,11 @@
+
+
+sudo apt-get install avrdude
+sudo apt-get install gcc-avr
+sudo apt-get install avr-libc
+
+avr-gcc -g -Os -mmcu=attiny88 -c my_file.c
+avr-gcc -g -mmcu=attiny88 -o my_file.elf my_file.o
+avr-objcopy -j .text -j .data -O ihex my_file.elf my_file.hex
+
+#avrdude -p attiny88 -b 19600 -c avrisp -P /dev/spidev0.0 -U flash:w:my_file.hex
