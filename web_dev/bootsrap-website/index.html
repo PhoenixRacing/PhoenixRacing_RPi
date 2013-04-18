@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Phoenix Control Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- The styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+      }
+
+    body {
+      padding-top:40px;
+      -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+      /*box-sizing: border-box;          Opera/IE */
+    }
+    </style>
+
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+
+    <!-- Fav icons -->
+    <link rel="shortcut icon" href="ico/favicon.png">
+
+
+    <!-- Google Maps -->
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+
+          <a class="brand" href="#">Phoenix Racing</a>
+
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li id="map_navbar"><a href="#">Map</a></li>
+              <li><a href="#about">Data</a></li>
+              <li><a href="#contact">IMU</a></li>
+              <li><a href="#video">Video</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="fill">
+      <div id="map_canvas"></div>
+    </div>
+
+    <!-- The javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript">
+      function initialize() {
+        var mapOptions = {
+          zoom: 12,
+          center: new google.maps.LatLng(42.292644,-71.264602),
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+      }
+
+      function loadScript() {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyD6IcTXNmwHlOtniH--M6YRJwvmxCrytcs&sensor=false&callback=initialize";
+        document.body.appendChild(script);
+      }
+
+      $( "#map_navbar" ).click(function( event ) {
+          $(this).addClass("active")
+          loadScript();
+      });
+    </script>
+
+  </body>
+</html>
