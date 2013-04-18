@@ -1,5 +1,5 @@
 all: main.hex
-	avrdude -P gpio -c gpio -p attiny88 -U flash:w:main.hex
+	sudo avrdude -P gpio -c gpio -p attiny88 -U flash:w:main.hex
 	rm -rf *.elf
 	rm -rf *.o
 

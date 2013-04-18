@@ -19,6 +19,7 @@ def decdeg2dms(dd):
 	deg = deg if positive else -deg
 	return deg,mnt,sec
 
+
 while True:
 	try:
 		report = session.next()
@@ -26,6 +27,7 @@ while True:
 		# To see all report data, uncomment the line below
 		#print report
 		if report['class'] == 'TPV':
+			print 'Recieved Report'
 			if hasattr(report, 'time'):
 				date = report.time.partition('T')[0]
 				time = report.time.partition('T')[2].partition('.')[0]

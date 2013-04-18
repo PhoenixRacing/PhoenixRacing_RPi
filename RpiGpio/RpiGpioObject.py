@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
-from GpioExceptions import *
 import threading
+import spi
 
 
 """#####"""
@@ -9,6 +9,7 @@ import threading
 
 GPIO.setmode(GPIO.BOARD)
 
+# allows the generation of enums
 def enum(*sequential):
     return type('Enum', (), dict(zip(sequential, range(len(sequential)))))
 
@@ -19,7 +20,7 @@ IO_TYPES = enum(*IO_NAMES)
 
 pinList = [3,5,7,8,10,11,12,13,15,16,18,19,21,22,23,24,26]
 ioTypes = [{IO_TYPES.INPUT,IO_TYPES.OUTPUT}]*len(pinList)
-validPins = dict(zip(pinList,ioType))
+validPins = dict(zip(pinList,ioTypes))
 validPins[3].add(IO_TYPES.SDA)
 validPins[5].add(IO_TYPES.SCL)
 validPins[7].add(IO_TYPES.GPCLK0)
@@ -84,7 +85,10 @@ class RpiGpioPin(object):
 	def __init__(self,pinNum,ioType):
 		self.pinNum = pinNum
 		self.ioType = ioType
-		GPIO.setup(pinNum, ioType)
+		if ioType in (IO_TYPES.INPUT,):
+			GPIO.setup(pinNum, GPIO.IN)
+		elif ioType in (IO_TYPES.OUTPUT,):
+			GPIO.setup(GPIO.OUT)
 
 	#TODO make these methods more robust (i.e. handle all of the IO_TYPES)
 	def get(self):
@@ -94,7 +98,7 @@ class RpiGpioPin(object):
 			raise InvalidPinAccessException(self.pinNum,self.ioType,IO_TYPES.INPUT)
 
 	def set(self,val):
-		if self.ioType is IO_TYPES.OUTPUT
+		if self.ioType is IO_TYPES.OUTPUT:
 			GPIO.output(self.pinNum,val)
 		else:
 			raise InvalidPinAccessException(self.pinNum,self.ioType,IO_TYPES.OUTPUT)
@@ -145,6 +149,7 @@ class RpiGpioDevice(object):
 	def __init__(self, pinLayout):
 		self.pins = []
 		self.thread = None
+		self.alive = True
 		for pin, ioType in pinLayout.items():
 			self.pins.append(self.manager.registerDeviceOnPin(pin,ioType))
 
@@ -170,4 +175,44 @@ class RpiSerialDevice(RpiGpioDevice):
 	#     serial line at once, so maybe there should be a static (class) lock on the
 	#     write method
 	def __init__(self):
-		super(RpiSerialDevice, self).__init__(pin,{pinList})
+		super(RpiSerialDevice, self).__init__({8:IO_TYPES.SERIAL_TXD, 10:IO_TYPES.SERIAL_RXD})
+		self.alive = True;
+
+	def run(self):
+		while self.alive:
+			#wait for messages to send/recieve
+			raise NotImplementedError
+
+	def stop(self):
+		self.alive = False
+
+class RpiSPIDevice(RpiGpioDevice):
+	"""A device that can communicate over the SPI line"""
+	#TODO actually implement this class properly
+	def __init__(self, deviceNum, speed=200000, delay=150, startChar=0x10, endChar=0x11):
+		if deviceNum is 0:
+			pinNum = 24
+			pinType = IO_TYPES.CE0
+			deviceName = "/dev/spidev0.0"
+		elif deviceNum is 1:
+			pinNum = 26
+			pinType = IO_TYPES.CE1
+			deviceName = "/dev/spidev0.1"
+		super(RpiSPIDevice, self).__init__({19:IO_TYPES.MOSI, 21:IO_TYPES.MISO, 23:IO_TYPES.SCLK, pinNum:pinType})
+		self.status = spi.openSPI(speed=speed, device=deviceName, delay=delay)
+		self.start = startChar
+		self.end = endChar
+
+	def run(self):
+		while self.alive:
+			#wait for messages to send/recieve
+			raise NotImplementedError
+
+	def send(self,data):
+		"""data must be an iterable that returns bytes"""
+		for b in data:
+			spi.transfer((b,))
+
+	def stop(self):
+		self.alive = False
+		spi.closeSPI()

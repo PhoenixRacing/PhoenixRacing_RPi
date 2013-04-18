@@ -1,6 +1,6 @@
 //include libraries
 #include "main.h"
-//#include <util/delay.h>//for debugging purposes
+#include <util/delay.h>//for debugging purposes
 
 //declare static variables
 static const tachSpectrumMap[10] = {2,7,9,11,13,15,16,17,18,19};
@@ -16,23 +16,31 @@ int main(void){
 
 void setup(void){
 	//initialize variables
-	//testing values
-	carState.numDisplay1.digits[0]=1;
-	carState.numDisplay1.digits[1]=2;
-	carState.numDisplay1.digits[2]=5;
-	carState.numDisplay1.digits[3]=9;
-	carState.numDisplay1.colon = false;
-	carState.numDisplay1.decimal = 0b00000010;
+	//turn everything on to see that it is working
+	carState.tachDisplay = 10;
 
-	carState.numDisplay2.digits[0]=0;
-	carState.numDisplay2.digits[1]=4;
-	carState.numDisplay2.digits[2]=2;
-	carState.numDisplay2.digits[3]=0;
+	carState.numDisplay1.digits[0]=8;
+	carState.numDisplay1.digits[1]=8;
+	carState.numDisplay1.digits[2]=8;
+	carState.numDisplay1.digits[3]=8;
+	carState.numDisplay1.colon = true;
+	carState.numDisplay1.decimal = 0b00001111;
+
+	carState.numDisplay2.digits[0]=8;
+	carState.numDisplay2.digits[1]=8;
+	carState.numDisplay2.digits[2]=8;
+	carState.numDisplay2.digits[3]=8;
 	carState.numDisplay2.colon = true;
-	carState.numDisplay2.decimal = 0b00000000;
+	carState.numDisplay2.decimal = 0b00001111;
 
-	carState.buttonLED1 = true;
-	carState.buttonLED2 = true;
+	carState.buttonColor= GREEN;
+
+	carState.indicators.up = true;
+	carState.indicators.down = true;
+	carState.indicators.yellow = true;
+	carState.indicators.error = true;
+	carState.indicators.debug = true;
+
 	cli();//disable global interrupts
 	// setup PortD Pin0 as an output for testing purposes
 	initializeSPI();
@@ -56,6 +64,66 @@ void loop(void){
 	}
 	*/
 
+	updateTachSpectrum();
+	updateButton();
+	updateIndicators();
+
+	_delay_ms(200);
+
+	carState.tachDisplay = 10;
+
+	carState.numDisplay1.digits[0]=8;
+	carState.numDisplay1.digits[1]=8;
+	carState.numDisplay1.digits[2]=8;
+	carState.numDisplay1.digits[3]=8;
+	carState.numDisplay1.colon = true;
+	carState.numDisplay1.decimal = 0b00001111;
+
+	carState.numDisplay2.digits[0]=8;
+	carState.numDisplay2.digits[1]=8;
+	carState.numDisplay2.digits[2]=8;
+	carState.numDisplay2.digits[3]=8;
+	carState.numDisplay2.colon = true;
+	carState.numDisplay2.decimal = 0b00001111;
+
+	carState.buttonColor = GREEN;
+
+	carState.indicators.up = true;
+	carState.indicators.down = true;
+	carState.indicators.yellow = true;
+	carState.indicators.error = true;
+	carState.indicators.debug = true;
+
+	updateTachSpectrum();
+	updateButton();
+	updateIndicators();
+
+	_delay_ms(200);
+	
+	carState.tachDisplay = 0;
+
+	carState.numDisplay1.digits[0]=1;
+	carState.numDisplay1.digits[1]=2;
+	carState.numDisplay1.digits[2]=3;
+	carState.numDisplay1.digits[3]=4;
+	carState.numDisplay1.colon = false;
+	carState.numDisplay1.decimal = 0b00000000;
+
+	carState.numDisplay2.digits[0]=5;
+	carState.numDisplay2.digits[1]=6;
+	carState.numDisplay2.digits[2]=7;
+	carState.numDisplay2.digits[3]=8;
+	carState.numDisplay2.colon = false;
+	carState.numDisplay2.decimal = 0b00001111;
+
+	carState.buttonColor = OFF;
+
+	carState.indicators.up = false;
+	carState.indicators.down = false;
+	carState.indicators.yellow = false;
+	carState.indicators.error = false;
+	carState.indicators.debug = false;
+
 }
 
 
@@ -64,40 +132,39 @@ void loop(void){
 **SPI**
 *******/
 static int dataPos = 0;
-static char* statePtrs[21] = {&(carState.tachDisplay), &(carState.numDisplay1.digits[0]),\
+static char* statePtrs[20] = {&(carState.tachDisplay), &(carState.numDisplay1.digits[0]),\
 	&(carState.numDisplay1.digits[1]), &(carState.numDisplay1.digits[2]), &(carState.numDisplay1.digits[3]),\
 	&(carState.numDisplay1.decimal), &(carState.numDisplay1.colon), &(carState.numDisplay2.digits[0]),\
 	&(carState.numDisplay2.digits[1]), &(carState.numDisplay2.digits[2]), &(carState.numDisplay2.digits[3]),\
-	&(carState.numDisplay2.decimal), &(carState.numDisplay2.colon), &(carState.buttonLED1),\
-	&(carState.buttonLED2), &(carState.indicators.up),  &(carState.indicators.down), &(carState.indicators.yellow),\
+	&(carState.numDisplay2.decimal), &(carState.numDisplay2.colon), &(carState.buttonColor),\
+	&(carState.indicators.up),  &(carState.indicators.down), &(carState.indicators.yellow),\
 	&(carState.indicators.error), &(carState.indicators.debug)};
 
 void initializeSPI(void){
 	//Initialize the SPI as a slave with interrupts enabled
 	//and clock frequency of the oscillator freq (8Mhz)/16
-	SPCR = (1 << SPE) | (1 << SPR0) | (1 << SPIE);
-}
-
-void updateCarState(char data, int position){
-
+	DDRB = 1<<DDB4;
+	SPCR |= (1 << SPE) | (1 << SPIE);
 }
 
 ISR(SPI_STC_vect){
 	//define the interrupt behavior for spi serial transfer complete
-	switch (SPDR){
+	char data = SPDR;
+	switch (data){
 		case START_CHAR:
 			dataPos = 0;
 			break;
 		case END_CHAR:
-			break;
 			updateTachSpectrum();
 			updateButton();
 			updateIndicators();
+			break;
 		default:
-			if (dataPos >= sizeof(statePtrs)){
-				*(statePtrs[dataPos]) = SPDR;
+			if (dataPos < sizeof(statePtrs)){
+				*(statePtrs[dataPos]) = data;
+				dataPos++;
 			}
-			dataPos++;
+			
 	}
 }
 
@@ -228,10 +295,20 @@ void initializeButton(void){
 }	
 
 void updateButton(void){
-	BUTTON_LIGHT_REG |= carState.buttonLED1 << BUTTON_LIGHT1;
-	BUTTON_LIGHT_REG |= carState.buttonLED2 << BUTTON_LIGHT1;
-	BUTTON_LIGHT_REG &= ~(carState.buttonLED1 << BUTTON_LIGHT1);
-	BUTTON_LIGHT_REG &= ~(carState.buttonLED2 << BUTTON_LIGHT1);
+	switch (carState.buttonColor){
+		case OFF:
+			BUTTON_LIGHT_REG |= 1 << BUTTON_LIGHT1;
+			BUTTON_LIGHT_REG |= 1 << BUTTON_LIGHT2;
+			break;
+		case GREEN:
+			BUTTON_LIGHT_REG |= 1 << BUTTON_LIGHT1;
+			BUTTON_LIGHT_REG &= ~(1 << BUTTON_LIGHT2);
+			break;
+		case RED:
+			BUTTON_LIGHT_REG |= 1 << BUTTON_LIGHT2;
+			BUTTON_LIGHT_REG &= ~(1 << BUTTON_LIGHT1);
+			break;
+	}
 }
 
 ISR(BUTTON_PCINT_vect){
@@ -255,9 +332,17 @@ void initializeIndicators(void){
 }
 
 void updateIndicators(void){
-	IND_LIGHT1_REG |= carState.indicators.up << IND_LIGHT1;
-	IND_LIGHT2_REG |= carState.indicators.down << IND_LIGHT2;
-	IND_LIGHT3_REG |= carState.indicators.yellow << IND_LIGHT3;
+	IND_LIGHT1_REG |= carState.indicators.up <<  IND_LIGHT1;
+	IND_LIGHT2_REG |= carState.indicators.down <<  IND_LIGHT2;
+	IND_LIGHT3_REG |= carState.indicators.yellow <<  IND_LIGHT3;
 	IND_LIGHT4_REG |= carState.indicators.error <<  IND_LIGHT4;
-	IND_LIGHT5_REG |= carState.indicators.debug <<  IND_LIGHT5;
+	IND_LIGHT5_REG |= carState.indicators.debug << IND_LIGHT5;
+
+	IND_LIGHT1_REG &= ~(!carState.indicators.up <<  IND_LIGHT1);
+	IND_LIGHT2_REG &= ~(!carState.indicators.down <<  IND_LIGHT2);
+	IND_LIGHT3_REG &= ~(!carState.indicators.yellow <<  IND_LIGHT3);
+	IND_LIGHT4_REG &= ~(!carState.indicators.error <<  IND_LIGHT4);
+	IND_LIGHT5_REG &= ~(!carState.indicators.debug << IND_LIGHT5);
+	//IND_LIGHT5_REG |= (!carState.indicators.debug) <<  IND_LIGHT5;
+	//IND_LIGHT5_REG &= ~((!carState.indicators.debug) <<  IND_LIGHT5);
 }

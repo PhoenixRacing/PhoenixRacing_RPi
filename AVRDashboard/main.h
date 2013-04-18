@@ -33,8 +33,7 @@ typedef struct {
 	sevenSegmentDisplay numDisplay1;
 	sevenSegmentDisplay numDisplay2;
 	bool button;
-	bool buttonLED1;
-	bool buttonLED2;
+	bool buttonColor;
 	LEDs indicators; 
 } state;
 
@@ -87,6 +86,9 @@ void resetSSDCounter(void);
 /* Button */
 void initializeButton(void);
 void updateButton(void);
+#define OFF 0
+#define RED 1
+#define GREEN 2
 #define BUTTON_DIR_REG DDRC
 #define BUTTON_REG PORTC
 #define BUTTON_DIR DDC4

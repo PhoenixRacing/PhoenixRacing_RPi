@@ -1,4 +1,4 @@
-from BajaSensors import *
+from Rpi.Gpio.BajaSensors import *
 import time
 
 tach = Tachometer(11)
