@@ -24,15 +24,19 @@ class DataManager(ThreadObject):
 		self.subscribers = dict();
 		self.timer = timer
 
-	def subscribe(self, topic, callback):
-		if topic in self.subscribers.keys():
-			self.subscribers[topic].append(callback)
+	def subscribe(self, msgClass, callback):
+		if msgClass in self.subscribers.keys():
+			self.subscribers[msgClass].append(callback)
 		else:
-			self.subscribers[topic] = [callback]
+			self.subscribers[msgClass] = [callback]
 
-	def publish(self, topic, data):
-		for callback in self.subscribers.get(topic,[]):
-			callback(topic, data)
+	def publish(self, msg):
+		print self.subscribers
+		for callback in self.subscribers.get(msg.__class__,[]):
+			callback(msg)
+			print 'publishing to ',callback
+
+		print 'publishing ', msg
 
 class BajaDevice(ThreadObject):
 	pass

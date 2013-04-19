@@ -1,22 +1,54 @@
 from BajaDevices import *
+import csv, datetime
 
 class Talker(object):
-	def __init__(self,topics):
-		for topic in topics:
-			manager.subscribe(topic,self.talk)
+	def __init__(self,msgClasses):
+		for msgClass in msgClasses:
+			manager.subscribe(msgClass,self.talk)
 
-	def talk(self,topic,data):
-		print topic,data['lon']
+	def talk(self,msg):
+		print msg.name,' lon: ',msg['lon'],' lat: ',msg['lat']
+
+class Log(object):
+	def __init__(self,aFile,aWriter):
+		self.file = aFile
+		self.writer = aWriter
+		self.initialized = False
+		self.keys = []
+
+	def writeData(self,data):
+		#TODO: not critical, but we should make event items for each post
+		#so that we can have a consisten file format
+
+		if not self.initialized:
+			self.writer.writerow(sorted(data.keys()))
+			self.initialized = True
+
+		self.writer.writerow(list(val for (key, val) in sorted(data.items())))
+
+	def close(self):
+		self.file.close()
+
 
 class Logger(object):
-	def __init__(self,topics):
-		for topic in topics:
-			manager.subscribe(topic,self.log)
+	def __init__(self, msgClasses,filePrefix="./data/"):
+		self.prefix = filePrefix
+		self.suffix = (str(datetime.datetime.now()).replace(' ','')).split('.')[0] + '.csv'
+		self.logs = dict()
+		for aClass in msgClasses:
+			aFile = open(self.prefix + aClass.name + self.suffix,'a')
+			aWriter = csv.writer(aFile)
+			self.logs[aClass] = Log(aFile, aWriter)
+			manager.subscribe(aClass,self.log)
 
-	def log(self, topic, data):
-		pass#TODO write data to a file
+	def log(self, msg):
+		self.logs[msg.__class__].writeData(msg.data)
 
-def aCallback(topic, data):
-	print data
+	def close(self):
+		for log in self.logs.values():
+			log.close()
 
-manager.subscribe('gps',aCallback)
+
+
+#BajaSAE
+#h0rsepow3r!
