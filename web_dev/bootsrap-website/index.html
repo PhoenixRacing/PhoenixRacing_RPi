@@ -93,11 +93,28 @@
     <script type="text/javascript">
       function initialize() {
         var mapOptions = {
-          zoom: 12,
-          center: new google.maps.LatLng(42.292644,-71.264602),
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+          zoom: 15,
+          center: new google.maps.LatLng(36.196378,-85.538575),
+          mapTypeId: google.maps.MapTypeId.HYBRID
         }
         var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+
+        var polyOptions = {
+          strokeColor: '#000000',
+          strokeOpacity: 1.0,
+          strokeWeight: 3
+        };
+
+        poly = new google.maps.Polyline(polyOptions);
+        poly.setMap(map);
+
+        // Add a listener for the click event
+        google.maps.event.addListener(map, 'click', addLatLng);
+      };
+
+      function addLatLng(event) {
+        var path = poly.getPath();
+        path.push(event.latLng);        
       };
 
       function loadScript() {

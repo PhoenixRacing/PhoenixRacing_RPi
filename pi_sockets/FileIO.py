@@ -1,12 +1,13 @@
 from BajaDevices import *
-import csv, datetime
+import csv, datetime, json
 
 class Talker(object):
-	def __init__(self,msgClasses):
+	def __init__(self,msgClasses, currentValues):
 		for msgClass in msgClasses:
 			manager.subscribe(msgClass,self.talk)
 
 	def talk(self,msg):
+		currentValues[msg.name] = msg.data
 		print msg.name, msg.data
 
 class Log(object):
