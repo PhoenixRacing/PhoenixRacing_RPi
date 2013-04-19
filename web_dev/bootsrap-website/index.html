@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Phoenix Control Panel</title>
+    <title>Phoenix Racing Bootstrap</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -15,21 +15,25 @@
         width: 100%;
       }
 
-    body {
-      padding-top:40px;
-      -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-      /*box-sizing: border-box;          Opera/IE */
-    }
+      body {
+        padding-top:40px;
+        padding-right: 0; 
+        padding-left: 0;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        /*box-sizing: border-box;          Opera/IE */
+      }
+
+      #speedo, #tach {
+        width: 200px;
+        height: 160px;
+      }
+
     </style>
 
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
-
     <!-- Fav icons -->
     <link rel="shortcut icon" href="ico/favicon.png">
-
-
-    <!-- Google Maps -->
   </head>
 
   <body>
@@ -48,7 +52,7 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li id="map_navbar"><a href="#">Map</a></li>
-              <li><a href="#about">Data</a></li>
+              <li id="data_navbar"><a href="#about">Data</a></li>
               <li><a href="#contact">IMU</a></li>
               <li><a href="#video">Video</a></li>
             </ul>
@@ -57,8 +61,25 @@
       </div>
     </div>
 
-    <div class="fill">
-      <div id="map_canvas"></div>
+    <!-- content -->
+    <div class="row-fluid">
+      <div class="span12">
+        <div id="map_canvas"></div>
+      </div>
+    </div>
+
+    <!-- modals -->
+    <div id="speedTachModal" class="modal-speedTach hide">
+      <!-- <div class="modal-header"></div> -->
+      <div class="modal-body">
+        <div class="row-fluid">
+          <div class="span6">
+            <div id="speedo"></div>
+          </div>
+          <div class="span6">
+            <div id="tach"></div>
+          </div>
+      </div>
     </div>
 
     <!-- The javascript
@@ -66,6 +87,9 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.js"></script>
+    <script src="js/raphael.2.1.0.min.js"></script>
+    <script src="js/justgage.1.0.1.min.js"></script>
+
     <script type="text/javascript">
       function initialize() {
         var mapOptions = {
@@ -74,19 +98,54 @@
           mapTypeId: google.maps.MapTypeId.ROADMAP
         }
         var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-      }
+      };
 
       function loadScript() {
         var script = document.createElement("script");
         script.type = "text/javascript";
         script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyD6IcTXNmwHlOtniH--M6YRJwvmxCrytcs&sensor=false&callback=initialize";
         document.body.appendChild(script);
-      }
+      };
+
+      $(window).resize(function () {
+          var h = $(window).height();
+          var navOffset = 51; //navbar height
+          $('#map_canvas').css('height', (h - navOffset));
+      }).resize();
 
       $( "#map_navbar" ).click(function( event ) {
-          $(this).addClass("active")
+          $(this).addClass("active");
           loadScript();
+          $( "#speedTachModal" ).modal({
+            backdrop: false,
+            keyboard: false
+          });
+      });     
+
+      var sp;
+      var ta;
+      $( "#speedTachModal" ).on('shown', function(){
+          sp = new JustGage({
+            id: "speedo",
+            value: 24,
+            min: 0,
+            max: 40,
+            title: "Speed (MPH)"
+          });
+          ta = new JustGage({
+            id: "tach",
+            value: 1500,
+            min: 0,
+            max: 4000,
+            title: "Tachometer (RPM)"
+          });                 
       });
+
+
+      $( "#data_navbar" ).click(function( event ) {
+        sp.refresh(10);
+      });       
+
     </script>
 
   </body>

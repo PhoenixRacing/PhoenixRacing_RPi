@@ -42,16 +42,7 @@ img {
 .map_canvas img,
 .map_canvas embed,
 .map_canvas object {
-  max-width: none !important; 
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-}
-
-.fill {
-  min-height: 100%;
-  height: 100%;
-}
+  max-width: none !important; }
 
 .left {
   float: left !important; }
