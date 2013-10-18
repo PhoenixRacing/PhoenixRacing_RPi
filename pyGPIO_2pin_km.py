@@ -4,13 +4,13 @@ import RPi.GPIO as GPIO
 import datetime
 import csv
 import os
-import db_wrapper
+# import db_wrapper
 
-def upload_dropbox(results_file, fig):
-    db = db_wrapper.DropboxTerm()
-    print results_file
-    db.do_put(results_file, 'cvt_tests/'+results_file)
-    db.do_put(fig, 'cvt_tests/'+fig)
+# def upload_dropbox(results_file, fig):
+#     db = db_wrapper.DropboxTerm()
+#     print results_file
+#     db.do_put(results_file, 'cvt_tests/'+results_file)
+#     db.do_put(fig, 'cvt_tests/'+fig)
 
 #setup the board layout
 SPEDO_PIN = 16
