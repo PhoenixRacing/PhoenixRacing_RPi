@@ -30,7 +30,7 @@ alpha = .5 #filter constant
 
 #setup csv stuff
 f_name = "../cvt_test/CVT_Test_" + str(datetime.datetime.now()) + ".csv"
-dataFile = open(f_name,'w+')
+dataFile = open(f_name,'w')
 dataWriter = csv.writer(dataFile)
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
 dataWriter.writerow([initMsg])
