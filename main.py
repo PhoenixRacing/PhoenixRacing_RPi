@@ -10,21 +10,22 @@ dataWriter = csv.writer(dataFile)
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
 dataWriter.writerow([initMsg])
 
-tach = Tachometer(11)
-speedo = Tachometer(12)
+tach = Tachometer(17)
+speedo = Tachometer(18)
 
 tach.start()
 speedo.start()
 
 while True:
-	try:
-		time.sleep(1)
-		print tach.get()
+  try:
+    time.sleep(1)
+    print tach.get()
     print speedo.get()
     dataWriter.writerow([speedo.get()[0],tach.get()[0], tach.get()[1])
-	except KeyboardInterrupt, SystemExit:
+
+  except KeyboardInterrupt, SystemExit:
     print 'Shutting down...'
-		tach.stop()
+    tach.stop()
     speedo.stop()
 
     # close csv file
@@ -33,5 +34,4 @@ while True:
 
     #create plot png
     fig = CVT.save_plot(f_name)
-
-		break
+    break

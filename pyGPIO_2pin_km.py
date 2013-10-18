@@ -13,8 +13,8 @@ import os
 #     db.do_put(fig, 'cvt_tests/'+fig)
 
 #setup the board layout
-SPEDO_PIN = 16
-TACH_PIN = 15
+SPEDO_PIN = 17
+TACH_PIN = 18
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(SPEDO_PIN, GPIO.IN)
