@@ -14,7 +14,7 @@ class Tachometer(RpiGpioDevice):
 		self.alpha = .33
 
 	def get(self):
-		return self.averagedRPM
+		return (self.averagedRPM, self.lastUpdateTime)
 
 	def run(self):
 		while self.alive:
