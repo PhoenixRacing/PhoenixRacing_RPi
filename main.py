@@ -21,7 +21,7 @@ while True:
     time.sleep(1)
     print tach.get()
     print speedo.get()
-    dataWriter.writerow([speedo.get()[0],tach.get()[0], tach.get()[1])
+    dataWriter.writerow([speedo.get()[0],tach.get()[0], tach.get()[1]])
 
   except KeyboardInterrupt, SystemExit:
     print 'Shutting down...'
