@@ -19,8 +19,7 @@ speedo.start()
 while True:
   try:
     time.sleep(1)
-    print tach.get()
-    print speedo.get()
+    print "Speedo: %f  Tach: %f" % tach.get()[0], speedo.get()[0]
     dataWriter.writerow([speedo.get()[0],tach.get()[0], tach.get()[1]])
 
   except KeyboardInterrupt, SystemExit:
