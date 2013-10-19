@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 #setup the board layout
-SPEEDO_PIN = 18
-TACH_PIN = 22
+SPEEDO_PIN = 24
+TACH_PIN = 25
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(SPEEDO_PIN, GPIO.IN)
