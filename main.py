@@ -10,8 +10,8 @@ firstTime = datetime.datetime.now()
 initMsg = 'Starting Test %d/%d/%d %d:%d:%2f' % (firstTime.day, firstTime.month, firstTime.year, firstTime.hour, firstTime.minute, firstTime.second+firstTime.microsecond/1000000.0)
 dataWriter.writerow([initMsg])
 
-tach = Tachometer(18)
-speedo = Tachometer(22)
+tach = Tachometer(22)
+speedo = Tachometer(18)
 
 tach.start()
 speedo.start()
